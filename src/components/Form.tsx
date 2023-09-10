@@ -1,31 +1,23 @@
-import { FormEvent, useState } from "react";
+import { useForm } from "react-hook-form";
+import { FieldValues } from "react-hook-form";
 
 const Form = () => {
-  const [person, setPerson] = useState({
-    name: "",
-    age: "",
-  });
+  const { register, handleSubmit } = useForm();
+  console.log(register("name"));
 
-  const handelSubmit = (event: FormEvent) => {
-    event.preventDefault();
-    console.log(person);
-  };
+  const submitHandler = (data: FieldValues) => console.log(data);
 
   return (
-    <form onSubmit={handelSubmit}>
+    <form onSubmit={handleSubmit(submitHandler)}>
       <div className="mb-3">
         <label htmlFor="name" className="form-label">
           Name
         </label>
-        {/* when the user check the label, the input automatically focus */}
         <input
-          onChange={(event) =>
-            setPerson({ ...person, name: event.target.value })
-          }
+          {...register("name")}
           id="name"
           type="text"
           className="form-control"
-          value={person.name}
         />
       </div>
 
@@ -34,13 +26,10 @@ const Form = () => {
           Age
         </label>
         <input
-          onChange={(event) =>
-            setPerson({ ...person, age: event.target.value })
-          }
+          {...register("age")}
           id="age"
           type="number"
           className="form-control"
-          value={person.age}
         />
       </div>
       <button className="btn btn-primary" type="submit">
