@@ -1,53 +1,45 @@
-import { useForm, FieldValues } from "react-hook-form";
-import { v4 as uuidv4 } from "uuid";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-interface Props {
-  categories: string[];
-  addExpense: (data: {
-    key: string;
-    description: string;
-    amount: number;
-    category: string;
-  }) => void;
-}
+import categories from "./categories";
 
 const schema = z.object({
   description: z
     .string()
-    .min(3, { message: "Description must be at least 3 characters." }),
+    .min(3, { message: "Description should be at least 3 characters." })
+    .max(50),
   amount: z
     .number({ invalid_type_error: "Amount is required." })
-    .positive({ message: "Please enter valid amount." }),
-  category: z.string().min(1, { message: "Please select below category." }),
+    .min(0.01)
+    .max(100_000),
+  category: z.enum(categories, {
+    errorMap: () => ({ message: "Category is required." }),
+  }),
 });
 
 type FormData = z.infer<typeof schema>;
+interface Props {
+  addExpense: (data: FormData) => void;
+}
 
-const ExpenseForm = ({ categories, addExpense }: Props) => {
+const ExpenseForm = ({ addExpense }: Props) => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
 
-  const submitHandler = ({ description, amount, category }: FieldValues) => {
-    const newExpenseItem = {
-      description: description,
-      amount: amount,
-      category: category,
-      key: uuidv4(),
-    };
-    console.log(newExpenseItem);
-    addExpense(newExpenseItem);
-  };
-
   return (
     <div>
-      <form onSubmit={handleSubmit((data) => submitHandler(data))}>
+      <form
+        onSubmit={handleSubmit((data) => {
+          addExpense(data);
+          reset();
+        })}
+      >
         <div className="mb-3">
           <label htmlFor="description" className="form-label">
             description

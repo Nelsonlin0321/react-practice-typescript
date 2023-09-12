@@ -1,9 +1,9 @@
+import categories from "./categories";
 interface Props {
-  categories: string[];
   onSelect: (category: string) => void;
 }
 
-const ExpenseFilter = ({ categories, onSelect }: Props) => {
+const ExpenseFilter = ({ onSelect }: Props) => {
   return (
     <div>
       <select

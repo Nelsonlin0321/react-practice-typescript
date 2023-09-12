@@ -1,5 +1,5 @@
 interface expense {
-  key: string;
+  key: number;
   description: string;
   amount: number;
   category: string;
@@ -7,7 +7,7 @@ interface expense {
 
 interface Props {
   expenseList: expense[];
-  onDelete: (key: string) => void;
+  onDelete: (key: number) => void;
 }
 
 const ExpenseList = ({ expenseList, onDelete }: Props) => {
