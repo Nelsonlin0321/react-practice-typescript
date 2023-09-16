@@ -16,17 +16,32 @@ function App() {
     //   .then((res) => setUsers(res.data))
     //   .catch((err) => setError(err.message));
 
-    fetch("https://jsonplaceholder.typicode.com/ussers")
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error("Fail to fetch users data!");
-        }
-        return res.json();
-      })
-      .then((data: User[]) => setUsers(data))
-      .catch((err) => {
-        setError(err.message);
-      });
+    // fetch("https://jsonplaceholder.typicode.com/ussers")
+    //   .then((res) => {
+    //     if (!res.ok) {
+    //       throw new Error("Fail to fetch users data!");
+    //     }
+    //     return res.json();
+    //   })
+    //   .then((data: User[]) => setUsers(data))
+    //   .catch((err) => {
+    //     setError(err.message);
+    //   });
+
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          "https://jsonplaceholder.typicode.com/susers"
+        );
+        const data: User[] = await response.json();
+        setUsers(data);
+      } catch (error: any) {
+        console.error(error);
+        setError(error.message);
+      }
+
+      fetchData();
+    };
   }, []);
 
   return (
