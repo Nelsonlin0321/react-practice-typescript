@@ -13,6 +13,7 @@ function App() {
 
   useEffect(() => {
     const controller = new AbortController();
+    console.log("Effect is executing!");
     setLoading(true);
     axios
       .get<User[]>("https://jsonplaceholder.typicode.com/users", {
@@ -27,59 +28,37 @@ function App() {
         setError(err.message);
         setLoading(false);
       });
-    // .finally(() => {
-    //   setLoading(false);
-    // });
 
     return () => {
       controller.abort();
     };
-
-    // fetch("https://jsonplaceholder.typicode.com/ussers")
-    //   .then((res) => {
-    //     if (!res.ok) {
-    //       throw new Error("Fail to fetch users data!");
-    //     }
-    //     return res.json();
-    //   })
-    //   .then((data: User[]) => setUsers(data))
-    //   .catch((err) => {
-    //     setError(err.message);
-    //   });
-    // const fetchData = async () => {
-    //   try {
-    //     const response = await fetch(
-    //       "https://jsonplaceholder.typicode.com/susers"
-    //     );
-    //     const data: User[] = await response.json();
-    //     setUsers(data);
-    //   } catch (error: any) {
-    //     console.error(error);
-    //     setError(error.message);
-    //   }
-    //   fetchData();
-    // };
-    // const fetchUsers = async () => {
-    //   try {
-    //     const response = await axios.get<User[]>(
-    //       "https://jsonplaceholder.typicode.com/susers"
-    //     );
-    //     const data = await response.data;
-    //     setUsers(data);
-    //   } catch (error) {
-    //     setError((error as AxiosError).message);
-    //   }
-    //   fetchUsers();
-    // };
   }, []);
+
+  const deleteUser = (user: User) => {
+    setUsers(users.filter((u) => u.id != user.id));
+    axios
+      .delete("https://jsonplaceholder.typicode.com/users/" + user.id)
+      .catch((error) => setError(error.message));
+  };
 
   return (
     <>
       {isLoading && <div className="spinner-border"></div>}
       {error && <p className="text-danger">{error}</p>}
-      <ul>
+      <ul className="list-group">
         {users.map((user) => (
-          <li key={user.id}>{user.name}</li>
+          <li
+            key={user.id}
+            className="list-group-item d-flex justify-content-between"
+          >
+            {user.name}
+            <button
+              onClick={() => deleteUser(user)}
+              className="btn btn-outline-danger"
+            >
+              Delete
+            </button>
+          </li>
         ))}
       </ul>
     </>
