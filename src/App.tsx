@@ -1,4 +1,4 @@
-import axios, { AxiosError } from "axios";
+import axios, { AxiosError, CanceledError } from "axios";
 import { useEffect, useState } from "react";
 
 interface User {
@@ -11,10 +11,21 @@ function App() {
   const [error, setError] = useState<string>("");
 
   useEffect(() => {
-    // axios
-    //   .get<User[]>("https://jsonplaceholder.typicode.com/susers")
-    //   .then((res) => setUsers(res.data))
-    //   .catch((err) => setError(err.message));
+    const controller = new AbortController();
+
+    axios
+      .get<User[]>("https://jsonplaceholder.typicode.com/users", {
+        signal: controller.signal,
+      })
+      .then((res) => setUsers(res.data))
+      .catch((err) => {
+        if (err instanceof CanceledError) return;
+        setError(err.message);
+      });
+
+    return () => {
+      controller.abort();
+    };
 
     // fetch("https://jsonplaceholder.typicode.com/ussers")
     //   .then((res) => {
@@ -27,7 +38,6 @@ function App() {
     //   .catch((err) => {
     //     setError(err.message);
     //   });
-
     // const fetchData = async () => {
     //   try {
     //     const response = await fetch(
@@ -39,23 +49,20 @@ function App() {
     //     console.error(error);
     //     setError(error.message);
     //   }
-
     //   fetchData();
     // };
-
-    const fetchUsers = async () => {
-      try {
-        const response = await axios.get<User[]>(
-          "https://jsonplaceholder.typicode.com/susers"
-        );
-        const data = await response.data;
-        setUsers(data);
-      } catch (error) {
-        setError((error as AxiosError).message);
-      }
-
-      fetchUsers();
-    };
+    // const fetchUsers = async () => {
+    //   try {
+    //     const response = await axios.get<User[]>(
+    //       "https://jsonplaceholder.typicode.com/susers"
+    //     );
+    //     const data = await response.data;
+    //     setUsers(data);
+    //   } catch (error) {
+    //     setError((error as AxiosError).message);
+    //   }
+    //   fetchUsers();
+    // };
   }, []);
 
   return (
