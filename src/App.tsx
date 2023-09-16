@@ -1,6 +1,6 @@
-import axios, { AxiosError, CanceledError } from "axios";
 import { useEffect, useState } from "react";
-
+import apiClient from "./services/api-client";
+import { CanceledError } from "./services/api-client";
 interface User {
   id: number;
   name: string;
@@ -15,8 +15,8 @@ function App() {
     const controller = new AbortController();
     console.log("Effect is executing!");
     setLoading(true);
-    axios
-      .get<User[]>("https://jsonplaceholder.typicode.com/users", {
+    apiClient
+      .get<User[]>("users", {
         signal: controller.signal,
       })
       .then((res) => {
@@ -37,20 +37,18 @@ function App() {
   const deleteUser = (user: User) => {
     const originalUsers = [...users];
     setUsers(users.filter((u) => u.id != user.id));
-    axios
-      .delete("https://jsonplaceholder.typicode.com/users/" + user.id)
-      .catch((error) => {
-        setError(error.message);
-        setUsers(originalUsers);
-      });
+    apiClient.delete("/users/" + user.id).catch((error) => {
+      setError(error.message);
+      setUsers(originalUsers);
+    });
   };
 
   const addUser = () => {
     const originalUsers = [...users];
     const newUser = { id: users.length + 1, name: "John" };
     setUsers([newUser, ...users]);
-    axios
-      .post("https://jsonplaceholder.typicode.com/users", newUser)
+    apiClient
+      .post("/users", newUser)
       .then(({ data: SavedUser }) => setUsers([SavedUser, ...users]))
       .catch((error) => {
         setError(error.message);
@@ -62,15 +60,10 @@ function App() {
     const originalUsers = [...users];
     const updatedUser = { ...user, name: user.name + "!" };
     setUsers(users.map((u) => (u.id === user.id ? updatedUser : u)));
-    axios
-      .patch(
-        "https://jsonplaceholder.typicode.com/users/" + user.id,
-        updateUser
-      )
-      .catch((error) => {
-        setError(error.message);
-        setUsers(originalUsers);
-      });
+    apiClient.patch("/users/" + user.id, updateUser).catch((error) => {
+      setError(error.message);
+      setUsers(originalUsers);
+    });
   };
 
   return (
