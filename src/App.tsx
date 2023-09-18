@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { CanceledError } from "./services/api-client";
-import UserService from "./services/user-service";
-import userService, { User } from "./services/user-service";
+import UserService, { User } from "./services/user-service";
 
 function App() {
   const [users, setUsers] = useState<User[]>([]);
@@ -42,8 +41,7 @@ function App() {
     const originalUsers = [...users];
     const newUser = { id: users.length + 1, name: "John" };
     setUsers([newUser, ...users]);
-    userService
-      .createUser(newUser)
+    UserService.createUser(newUser)
       .then(({ data: SavedUser }) => setUsers([SavedUser, ...users]))
       .catch((error) => {
         setError(error.message);
@@ -55,7 +53,7 @@ function App() {
     const originalUsers = [...users];
     const updatedUser = { ...user, name: user.name + "!" };
     setUsers(users.map((u) => (u.id === user.id ? updatedUser : u)));
-    userService.updateUser(updatedUser).catch((error) => {
+    UserService.updateUser(updatedUser).catch((error) => {
       setError(error.message);
       setUsers(originalUsers);
     });

@@ -29,13 +29,14 @@ class UserService{
   }
   
   deleteUser(id: number) {
-    const request = apiClient.delete("/user"+id)
+    const request = apiClient.delete("/users/"+id)
     return request
   }
   
 
-  createUser(user:User) {
-    const request = apiClient.post("/user", user);
+  createUser(user: User) {
+    console.log(user)
+    const request = apiClient.post("/users", user);
     return request;
   }
 
