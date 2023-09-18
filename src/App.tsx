@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { CanceledError } from "./services/api-client";
-import UserService, { User } from "./services/user-service";
+import UserService from "./services/user-service";
+import { User } from "./services/user-service";
 
 function App() {
   const [users, setUsers] = useState<User[]>([]);
@@ -11,7 +12,7 @@ function App() {
     console.log("Effect is executing!");
     setLoading(true);
 
-    const { request, cancel } = UserService.getAllUser();
+    const { request, cancel } = UserService.getAll<User[]>();
     request
       .then((res) => {
         setUsers(res.data);
@@ -31,7 +32,7 @@ function App() {
   const deleteUser = (user: User) => {
     const originalUsers = [...users];
     setUsers(users.filter((u) => u.id != user.id));
-    UserService.deleteUser(user.id).catch((error) => {
+    UserService.delete(user.id).catch((error) => {
       setError(error.message);
       setUsers(originalUsers);
     });
@@ -41,7 +42,7 @@ function App() {
     const originalUsers = [...users];
     const newUser = { id: users.length + 1, name: "John" };
     setUsers([newUser, ...users]);
-    UserService.createUser(newUser)
+    UserService.create(newUser)
       .then(({ data: SavedUser }) => setUsers([SavedUser, ...users]))
       .catch((error) => {
         setError(error.message);
